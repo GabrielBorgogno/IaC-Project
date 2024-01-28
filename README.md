@@ -34,8 +34,8 @@ Servidores em Desenvolvimento,
 - Nexus
   
 3. VM de Banco de dados(Infra em Docker)
-   - Postgres
-   - MongoDB
+- Postgres
+- MongoDB
 
 4. VM de aplicacao
 - Aplicacao backend em Fast-Api com algum de meus projetos
