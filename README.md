@@ -44,7 +44,7 @@ Servidores em Desenvolvimento,
   Obs: por dependencia de aplicao opto por realizar o deploy do redis e do zookeper na mesma maquina da aplicacao
 
 5. VM de monitoramento de logs(Kubernetes)
-- ELK(Elastic Search , Logstash ou Fluentd, Kibana
+- ELK(Elastic Search , Logstash ou Fluentd, Kibana)
 
   Obs: Por mais mais estranho que pareca prefiro isolar o ELK pois o consumo de recursos e exorbitante oque poderia gerar inconsistencias tendo em vista que nao tenho memoria RAM o suficiente para segurar qualquer outra VM junto a um ELK bem alimentado de logs.
   
