@@ -6,47 +6,45 @@
     config.vm.provider "vmware_desktop" do |vmware|
       vmware.memory = "1024"
       vmware.cpus = 2
-  
     end
+
     # Script de provisionamento para instalar o Docker
-    config.vm.provision "shell", inline: <<-SHELL
-    sudo yum install -y yum-utils
-    SHELL
-    config.vm.provision "shell", path: "./install_docker.sh"
+    config.vm.provision "shell", inline: "echo 'Step 1: Instalando o Docker'"
+    config.vm.provision "shell", path: "./install_docker.sh",privileged: false
+
+    
+    # Subir o Nginx
+    config.vm.provision "shell", inline: "echo 'Step 3: Instalando o Nginx'"
+    config.vm.provision "shell", path: "./install_nginx.sh", privileged: false
   
+    #Configuracao de rede'
+    config.vm.provision "shell", inline: "echo 'Step 4: Configurando a rede'"
+    config.vm.provision "shell", path: "./network_config.sh", privileged: false
+
     # Subir o Prometheus
+    config.vm.provision "shell", inline: "echo 'Step 5: Instalando o Prometheus'"
     config.vm.provision "shell", inline: <<-SHELL
     sudo docker run -d -p 9090:9090 --name prometheus prom/prometheus
     SHELL
 
     # Subir o Grafana
+    config.vm.provision "shell", inline: "echo 'Step 6: Instalando o Grafana'"
     config.vm.provision "shell", inline: <<-SHELL
     sudo docker run -d -p 3000:3000 --name grafana grafana/grafana
     SHELL
 
     # Subir o Node Exporter
+    config.vm.provision "shell", inline: "echo 'Step 7: Instalando o Node Exporter'"
     config.vm.provision "shell", inline: <<-SHELL
     sudo docker run -d -p 9100:9100 --name node_exporter prom/node-exporter
     SHELL
 
     # Subir o Alertmanager
+    config.vm.provision "shell", inline: "echo 'Step 8: Instalando o Alertmanager'"
     config.vm.provision "shell", inline: <<-SHELL
     sudo docker run -d -p 9093:9093 --name alertmanager prom/alertmanager
     SHELL
-
-    #rodar cron de monitoramento
-    config.vm.provision "shell", path: "./cron.sh"
-    
-    # Subir o Nginx
-    config.vm.provision "shell", path: "./install_nginx.sh"
-
-    #Configuracao de rede
-    config.vm.network "forwarded_port", guest: 9090, host: 9090
-    config.vm.network "forwarded_port", guest: 3000, host: 3000
-    config.vm.network "forwarded_port", guest: 9100, host: 9100
-    config.vm.network "forwarded_port", guest: 9093, host: 9093
-    
-    config.vm.provision "shell", path: "./network_config.sh"
+    config.vm.provision "shell", inline: "echo 'Instalacão concluída!'"
 
 
 

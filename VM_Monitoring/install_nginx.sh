@@ -4,37 +4,78 @@ sudo yum install -y nginx
 sudo systemctl enable nginx
 sudo systemctl start nginx
 
-#instala o certbot
-sudo yum install -y certbot
+#configuracao do nginx
 
-#instala o certbot-nginx
-sudo yum install -y certbot-nginx
+sudo tee /etc/nginx/nginx.conf <<EOF
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
 
-#cria o arquivo de configuração do nginx
-sudo tee /etc/nginx/conf.d/default.conf <<EOF
-server {
-    listen 80;
-    listen [::]:80;
-    server_name devops.com.ti;
+events {
+    worker_connections 1024;
+}
 
-    location / {
-        proxy_pass http://localhost:8585;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
+http {
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        server_name prometheus.local;
+        location / {
+            proxy_pass http://localhost:9090;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+        }
+    }
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name grafana.local;
+        location / {
+            proxy_pass http://localhost:3000;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+        }
+    }
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name alertmanager.local;
+        location / {
+            proxy_pass http://localhost:9093;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+        }
+    }
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name node_exporter.local;
+        location / {
+            proxy_pass http://localhost:9100;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+        }
+    }
+    server {
+        listen 80;
+        listen [::]:80;
+        server_name pushgateway.local;
+        location / {
+            proxy_pass http://localhost:9091;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+        }
     }
 }
 EOF
-
-sudo systemctl restart nginx
-
-sudo certbot --nginx -d devops.com.ti
-
-#envia ssh por email
-sudo tee /etc/cron.d/ssh_email <<EOF
-*/5 * * * * root /usr/bin/certbot renew
-EOF
-
-sudo systemctl restart crond
