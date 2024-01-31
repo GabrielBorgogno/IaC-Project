@@ -40,21 +40,27 @@ Vagrant.configure("2") do |config|
       -v /home/vagrant/alert-repo/alerts:/etc/prometheus/alerts \
       --name prometheus prom/prometheus
   SHELL
+  
+# Clonar o repositório de dashboards do Grafana do GitHub
+config.vm.provision "shell", inline: <<-SHELL
+  echo 'Step 7 : Clonando o repositório de dashboards do Grafana'
+  git clone https://github.com/username/grafana-dashboards.git /home/vagrant/grafana-dashboards
+SHELL
 
   # Subir o Grafana
-  config.vm.provision "shell", inline: "echo 'Step 7: Instalando o Grafana'"
+  config.vm.provision "shell", inline: "echo 'Step 8: Instalando o Grafana'"
   config.vm.provision "shell", inline: <<-SHELL
     docker run -d -p 3000:3000 --name grafana grafana/grafana
   SHELL
 
   # Subir o Node Exporter
-  config.vm.provision "shell", inline: "echo 'Step 8: Instalando o Node Exporter'"
+  config.vm.provision "shell", inline: "echo 'Step 9: Instalando o Node Exporter'"
   config.vm.provision "shell", inline: <<-SHELL
     docker run -d -p 9100:9100 --name node_exporter prom/node-exporter
   SHELL
 
   # Subir o Alertmanager
-  config.vm.provision "shell", inline: "echo 'Step 9: Instalando o Alertmanager'"
+  config.vm.provision "shell", inline: "echo 'Step 10: Instalando o Alertmanager'"
   config.vm.provision "shell", inline: <<-SHELL
     docker run -d -p 9093:9093 --name alertmanager prom/alertmanager
   SHELL
