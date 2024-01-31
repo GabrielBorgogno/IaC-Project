@@ -1,51 +1,63 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
 
-  Vagrant.configure("2") do |config|
-    config.vm.box = "centos/7"
+  # Configurações específicas do VMware Workstation/Fusion
+  config.vm.provider "vmware_desktop" do |vmware|
+    vmware.memory = "1024"
+    vmware.cpus = 2
+  end
 
-    # Configurações específicas do VMware Workstation/Fusion
-    config.vm.provider "vmware_desktop" do |vmware|
-      vmware.memory = "1024"
-      vmware.cpus = 2
-    end
+   # Instalar git
+   config.vm.provision "shell", inline: <<-SHELL
+   echo 'Pre Step: Instalando o git'
+   sudo yum -y install git
+ SHELL
 
-    # Script de provisionamento para instalar o Docker
-    config.vm.provision "shell", inline: "echo 'Step 1: Instalando o Docker'"
-    config.vm.provision "shell", path: "./install_docker.sh",privileged: false
+  # Script de provisionamento para instalar o Docker
+  config.vm.provision "shell", inline: "echo 'Step 1: Instalando o Docker'"
+  config.vm.provision "shell", path: "./install_docker.sh", privileged: false
 
-    
-    # Subir o Nginx
-    config.vm.provision "shell", inline: "echo 'Step 3: Instalando o Nginx'"
-    config.vm.provision "shell", path: "./install_nginx.sh", privileged: false
   
-    #Configuracao de rede'
-    config.vm.provision "shell", inline: "echo 'Step 4: Configurando a rede'"
-    config.vm.provision "shell", path: "./network_config.sh", privileged: false
+  # Subir o Nginx
+  config.vm.provision "shell", inline: "echo 'Step 3: Instalando o Nginx'"
+  config.vm.provision "shell", path: "./install_nginx.sh", privileged: false
 
-    # Subir o Prometheus
-    config.vm.provision "shell", inline: "echo 'Step 5: Instalando o Prometheus'"
-    config.vm.provision "shell", inline: <<-SHELL
-    sudo docker run -d -p 9090:9090 --name prometheus prom/prometheus
-    SHELL
+  # Configuracao de rede
+  config.vm.provision "shell", inline: "echo 'Step 4: Configurando a rede'"
+  config.vm.provision "shell", path: "./network_config.sh", privileged: false
 
-    # Subir o Grafana
-    config.vm.provision "shell", inline: "echo 'Step 6: Instalando o Grafana'"
-    config.vm.provision "shell", inline: <<-SHELL
-    sudo docker run -d -p 3000:3000 --name grafana grafana/grafana
-    SHELL
+  # Clonar o repositório de alertas do GitHub
+  config.vm.provision "shell", inline: <<-SHELL
+    echo 'Step 5: Clonando o repositório de alertas'
+    git clone https://github.com/GabrielBorgogno/Prometheus-Alerts.git /home/vagrant/alert-repo
+  SHELL
 
-    # Subir o Node Exporter
-    config.vm.provision "shell", inline: "echo 'Step 7: Instalando o Node Exporter'"
-    config.vm.provision "shell", inline: <<-SHELL
-    sudo docker run -d -p 9100:9100 --name node_exporter prom/node-exporter
-    SHELL
+  # Subir o Prometheus com a configuração de alertas
+  config.vm.provision "shell", inline: <<-SHELL
+    echo 'Step 6: Instalando o Prometheus com alertas'
+    docker run -d -p 9090:9090 \
+      -v /home/vagrant/alert-repo/prometheus.yml:/etc/prometheus/prometheus.yml \
+      -v /home/vagrant/alert-repo/alerts:/etc/prometheus/alerts \
+      --name prometheus prom/prometheus
+  SHELL
 
-    # Subir o Alertmanager
-    config.vm.provision "shell", inline: "echo 'Step 8: Instalando o Alertmanager'"
-    config.vm.provision "shell", inline: <<-SHELL
-    sudo docker run -d -p 9093:9093 --name alertmanager prom/alertmanager
-    SHELL
-    config.vm.provision "shell", inline: "echo 'Instalacão concluída!'"
+  # Subir o Grafana
+  config.vm.provision "shell", inline: "echo 'Step 7: Instalando o Grafana'"
+  config.vm.provision "shell", inline: <<-SHELL
+    docker run -d -p 3000:3000 --name grafana grafana/grafana
+  SHELL
 
+  # Subir o Node Exporter
+  config.vm.provision "shell", inline: "echo 'Step 8: Instalando o Node Exporter'"
+  config.vm.provision "shell", inline: <<-SHELL
+    docker run -d -p 9100:9100 --name node_exporter prom/node-exporter
+  SHELL
 
+  # Subir o Alertmanager
+  config.vm.provision "shell", inline: "echo 'Step 9: Instalando o Alertmanager'"
+  config.vm.provision "shell", inline: <<-SHELL
+    docker run -d -p 9093:9093 --name alertmanager prom/alertmanager
+  SHELL
+  config.vm.provision "shell", inline: "echo 'Instalação concluída!'"
 
 end
