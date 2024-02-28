@@ -1,0 +1,25 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+  
+  # Configurações específicas do VMware Workstation/Fusion
+  config.vm.provider "vmware_desktop" do |vmware|
+    vmware.memory = "1024"
+    vmware.cpus = 2
+  end
+
+  # instala o docker
+  config.vm.provision "shell", inline: "echo 'Step 1: Instalando o Docker'"
+  config.vm.provision "shell", path: "../Scripts/install_docker.sh", privileged: false
+
+  # instala o git
+  config.vm.provision "shell", inline: "echo 'Step 2: Instalando o Git'"
+  config.vm.provision "shell", inline: "sudo yum -y install git"
+  
+  # instala o jenkins em um container
+  config.vm.provision "shell", inline: "echo 'Step 3: Instalando o Jenkins'"
+  config.vm.provision "shell", path: "../Scripts/install_jenkins.sh", privileged: false
+
+  # instala o Gitlab em um container
+  config.vm.provision "shell", inline: "echo 'Step 4: Instalando o Gitlab'"
+  config.vm.provision "shell", path: "../Scripts/install_gitlab.sh", privileged: false
+end

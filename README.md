@@ -23,15 +23,16 @@ Acerca da infraestreutura, incialmente estou iniciando com uma VM de monitoramen
 
 Servidores em Desenvolvimento,
 
-1. VM de CICD(Infra em Docker e ArgoCD)
+1. VM de CICD(Infra em Docker)
 - Jenkins
-- ArgoCD
 - GitLab
 
 2. VM de Gerenciamento de Configuracoes e Secrets(Infra em Kubernetes)
 - Vault
 - Ansible
 - Nexus
+- ArgoCD
+
   
 3. VM de Banco de dados(Infra em Docker)
 - Postgres
