@@ -48,6 +48,11 @@ Servidores em Desenvolvimento,
 - ELK(Elastic Search , Logstash ou Fluentd, Kibana)
 
   Obs: Por mais mais estranho que pareca prefiro isolar o ELK pois o consumo de recursos e exorbitante oque poderia gerar inconsistencias tendo em vista que nao tenho memoria RAM o suficiente para segurar qualquer outra VM junto a um ELK bem alimentado de logs.
+
+6. VM de Monitoramento de Metricas
+- Grafana
+- Postgres
+- Exporters Opcionais dependendo do Cenario
   
 
 
