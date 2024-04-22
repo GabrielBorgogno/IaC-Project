@@ -42,6 +42,7 @@ Servidores em Desenvolvimento,
 - Aplicacao backend em Fast-Api com algum de meus projetos
 - Kafka
 - Redis
+- Tomcat
   Obs: por dependencia de aplicao opto por realizar o deploy do redis e do zookeper na mesma maquina da aplicacao
 
 5. VM de monitoramento de logs(Kubernetes)
@@ -51,7 +52,8 @@ Servidores em Desenvolvimento,
 
 6. VM de Monitoramento de Metricas
 - Grafana
-- Postgres
+- Prometheus
+- Zabix
 - Exporters Opcionais dependendo do Cenario
   
 
