@@ -1,33 +1,34 @@
+secrets = {}
+File.readlines('secrets.conf').each do |line|
+  key, value = line.split('=')
+  secrets[key.strip] = value.strip.delete('"')
+end
+
+db_password = secrets['db_password']
+admin_password = secrets['admin_password']
+
 Vagrant.configure("2") do |config|
-    config.vm.define "postgres" do |postgres|
-      postgres.vm.box = "bento/ubuntu-20.04"
-      postgres.vm.network "private_network", type: "dhcp"
-      postgres.vm.provider "virtualbox" do |vb|
-        vb.memory = "2048"
-      end
-      postgres.vm.provision "shell", inline: <<-SHELL
-        echo 'Step 1: Instalando Docker and Docker Compose'
-        sudo apt-get update
-        sudo apt-get install -y docker.io docker-compose
-        sudo usermod -aG docker vagrant
-        sudo systemctl enable docker
-        sudo systemctl start docker
-      SHELL
+  config.vm.define "database" do |database|
+    database.vm.box = "bento/ubuntu-20.04"
+    database.vm.network "private_network", type: "dhcp"
+    database.vm.provider "virtualbox" do |vb|
+      vb.memory = "2048"
     end
-  
-    config.vm.define "mongodb" do |mongodb|
-        mongodb.vm.box = "bento/ubuntu-20.04"
-        mongodb.vm.network "private_network", type: "dhcp"
-        mongodb.vm.provider "virtualbox" do |vb|
-        vb.memory = "2048"
-      end
-      mongodb.vm.provision "shell", inline: <<-SHELL
-        echo 'Step 1: Instalando Docker and Docker Compose'
-        sudo apt-get update
-        sudo apt-get install -y docker.io docker-compose
-        sudo usermod -aG docker vagrant
-        sudo systemctl enable docker
-        sudo systemctl start docker
-      SHELL
-    end
+
+    # Instalando o Docker
+    database.vm.provision "shell", inline: "echo 'Step 0: Instalando o Docker'"
+    database.vm.provision "shell", path: "../Scripts/install_docker.sh"
+
+    # Instalando e subindo o Postgres
+    database.vm.provision "shell", inline: <<-SHELL
+      echo 'Step 1: Configurando o Postgres'
+      sudo docker run --name postgres -e POSTGRES_PASSWORD=#{db_password} -d postgres
+    SHELL
+
+    # Instalando e subindo o MongoDB
+    database.vm.provision "shell", inline: <<-SHELL
+      echo 'Step 2: Instalando o MongoDB'
+      sudo docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=#{admin_password} mongo
+    SHELL
   end
+end
