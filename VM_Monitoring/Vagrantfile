@@ -70,8 +70,7 @@ SHELL
   SHELL
   config.vm.provision "shell", inline: "echo 'Instalação concluída!'"
 
-  # Script de provisionamento para instalar o Zabbix
-  instalacao e parametrizacao do Zabbix e suas dependências
+  #instalacao e parametrizacao do Zabbix e suas dependências
   config.vm.provision "shell", inline: "echo 'Step 11: Instalando o Zabbix'"
   config.vm.provision "shell", path: "../Scripts/install_zabbix.sh", privileged: false
 
