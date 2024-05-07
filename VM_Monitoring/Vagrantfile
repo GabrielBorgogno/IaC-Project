@@ -49,7 +49,7 @@ SHELL
 
 # Subir o Grafana e adicionar os dashboards
 config.vm.provision "shell", inline: <<-SHELL
-  echo 'Step Y: Subindo o Grafana e adicionando os dashboards'
+  echo 'Step 8: Subindo o Grafana e adicionando os dashboards'
   docker run -d -p 3000:3000 \
     -v /home/vagrant/grafana-dashboards:/var/lib/grafana/dashboards \
     -e "GF_DASHBOARDS_JSON_ENABLED=true" \
@@ -70,8 +70,9 @@ SHELL
   SHELL
   config.vm.provision "shell", inline: "echo 'Instalação concluída!'"
 
-  #instalacao e parametrizacao do Zabbix e suas dependências
-  #config.vm.provision "shell", inline: "echo 'Step 11: Instalando o Zabbix'"
-  #config.vm.provision "shell", path: "../Scripts/install_zabbix.sh", privileged: false
+  # Script de provisionamento para instalar o Zabbix
+  instalacao e parametrizacao do Zabbix e suas dependências
+  config.vm.provision "shell", inline: "echo 'Step 11: Instalando o Zabbix'"
+  config.vm.provision "shell", path: "../Scripts/install_zabbix.sh", privileged: false
 
 end
