@@ -29,13 +29,13 @@ Servidores em Desenvolvimento,
 
 **2. VM de Gerenciamento de Configuracoes e Secrets(Infra em Kubernetes)**
 - Vault
-- Ansible
+- Ansible(Core)
 - Nexus
 - ArgoCD
 
   
 **3. VM de Banco de dados(Infra em Docker)**
-- Postgres
+- Postgres -(Migrando para Oracle)
 - MongoDB
 
 4. VM de aplicacao
@@ -56,7 +56,7 @@ Servidores em Desenvolvimento,
 **6. VM de Monitoramento de Metricas**
 - Grafana
 - Prometheus
-- Zabix
+- Zabbix
 - Exporters Opcionais dependendo do Cenario
   
 
