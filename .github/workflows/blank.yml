@@ -1,0 +1,22 @@
+name: Vagrant Up
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Cache Vagrant boxes
+      uses: actions/cache@v3
+      with:
+        path: ~/.vagrant.d/boxes
+        key: ${{ runner.os }}-vagrant-${{ hashFiles('**/Vagrantfile') }}
+        restore-keys: |
+          ${{ runner.os }}-vagrant-
+    - name: Install Vagrant
+      run: sudo apt-get install -y vagrant
+    - name: Start Vagrant
+      run: vagrant up
